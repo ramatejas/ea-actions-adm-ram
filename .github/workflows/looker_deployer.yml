@@ -1,0 +1,106 @@
+name: callable_job
+
+on:
+  workflow_call:
+    inputs:
+      source:
+        required: true
+        type: string
+        description: Source from environment
+        default: 'dev'
+      destination:
+        required: true
+        type: string
+        description: Source from environment
+        default: 'staging'
+      folder_id:
+        required: true
+        type: string
+      obj_type:
+        required: true
+        type: string
+        description: Source from environment
+        default: 'Dashboard'
+      obj_recursive:
+        required: false
+        type: string
+        description: recursive (only for Folders)
+        default: false
+      obj_id1:
+        required: true
+        type: string
+      obj_id2:
+        required: false
+        type: string
+        default: ''
+      obj_id3:
+        required: false
+        type: string
+        default: ''
+      obj_id4:
+        required: false
+        type: string
+        default: ''
+      obj_id5:
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  ldeploy:
+    if: (!(inputs.source == 'dev' && inputs.destination == 'prod'))
+    runs-on: [self-hosted, nonprod]
+    steps:
+      - name: cleanup
+        run: rm -rf deployfolder/*
+      - name: export repository
+        run: ldeploy content export --ini /app/looker.ini --env ${{ inputs.source }} --folders ${{ inputs.folder_id }} --local-target deployfolder
+      - name: import 1st object 
+        run: |
+          dep_path=`find deployfolder -name ${{ inputs.obj_type }}_${{ inputs.obj_id1 }}_*`
+          ls -ltr
+          echo "deployment object Path:"$dep_path
+          echo "ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards $dep_path"
+          ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards "$dep_path"
+          echo "Done"
+      - name: import 2nd object 
+        run: |
+          if [ "${{ inputs.obj_id2 }}" != "" ]; then
+            dep_path=`find deployfolder -name ${{ inputs.obj_type }}_${{ inputs.obj_id2 }}_*`
+            ls -ltr
+            echo "deployment object Path:"$dep_path
+            echo "ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards $dep_path"
+            ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards "$dep_path"
+            echo "Done"
+          fi
+      - name: import 3rd object 
+        run: |
+          if [ "${{ inputs.obj_id3 }}" != "" ]; then
+            dep_path=`find deployfolder -name ${{ inputs.obj_type }}_${{ inputs.obj_id3 }}_*`
+            ls -ltr
+            echo "deployment object Path:"$dep_path
+            echo "ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards $dep_path"
+            ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards "$dep_path"
+            echo "Done"
+          fi
+      - name: import 4th object 
+        run: |
+          if [ "${{ inputs.obj_id4 }}" != "" ]; then
+            dep_path=`find deployfolder -name ${{ inputs.obj_type }}_${{ inputs.obj_id4 }}_*`
+            ls -ltr
+            echo "deployment object Path:"$dep_path
+            echo "ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards $dep_path"
+            ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards "$dep_path"
+            echo "Done"
+          fi
+      - name: import 5th object 
+        run: |
+          if [ "${{ inputs.obj_id5 }}" != "" ]; then
+            dep_path=`find deployfolder -name ${{ inputs.obj_type }}_${{ inputs.obj_id5 }}_*`
+            ls -ltr
+            echo "deployment object Path:"$dep_path
+            echo "ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards $dep_path"
+            ldeploy content import --ini /app/looker.ini --env ${{ inputs.destination }} --dashboards "$dep_path"
+            echo "Done"
+          fi
+
